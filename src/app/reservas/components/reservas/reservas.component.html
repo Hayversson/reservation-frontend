@@ -1,0 +1,149 @@
+<div class="top-actions">
+  <button
+    type="button"
+    class="btn btn-primary"
+    (click)="abrirFormulario()"
+    [disabled]="mostrarFormulario()"
+  >
+    Nueva reserva
+  </button>
+</div>
+
+@if (mostrarFormulario()) {
+  <section class="card" aria-labelledby="crear-reserva-title">
+    <h2 id="crear-reserva-title" class="card__title">Crear reserva</h2>
+
+    <form class="form" [formGroup]="form" (ngSubmit)="crearReserva()">
+      <div class="form__row">
+        <label class="form__label" for="nombreCliente">Nombre del cliente</label>
+        <input
+          id="nombreCliente"
+          type="text"
+          class="form__control"
+          formControlName="nombreCliente"
+          autocomplete="name"
+          [attr.aria-invalid]="form.controls.nombreCliente.invalid && (form.controls.nombreCliente.touched || form.controls.nombreCliente.dirty)"
+        />
+      </div>
+
+      <div class="form__grid">
+        <div class="form__row">
+          <label class="form__label" for="fecha">Fecha</label>
+          <input
+            id="fecha"
+            type="date"
+            class="form__control"
+            formControlName="fecha"
+            [attr.aria-invalid]="form.controls.fecha.invalid && (form.controls.fecha.touched || form.controls.fecha.dirty)"
+          />
+        </div>
+
+        <div class="form__row">
+          <label class="form__label" for="hora">Hora</label>
+          <input
+            id="hora"
+            type="time"
+            class="form__control"
+            formControlName="hora"
+            [attr.aria-invalid]="form.controls.hora.invalid && (form.controls.hora.touched || form.controls.hora.dirty)"
+          />
+        </div>
+      </div>
+
+      <div class="form__row">
+        <label class="form__label" for="servicio">Servicio</label>
+        <select
+          id="servicio"
+          class="form__control"
+          formControlName="servicio"
+          [attr.aria-invalid]="form.controls.servicio.invalid && (form.controls.servicio.touched || form.controls.servicio.dirty)"
+        >
+          <option value="" disabled>Selecciona un servicio</option>
+          @for (s of serviciosDisponibles; track s) {
+            <option [value]="s">{{ s }}</option>
+          }
+        </select>
+      </div>
+
+      <div class="form__actions">
+        <button
+          type="button"
+          class="btn btn-ghost"
+          (click)="cerrarFormulario()"
+          [disabled]="guardando()"
+        >
+          Cancelar
+        </button>
+        <button
+          type="submit"
+          class="btn btn-primary"
+          [disabled]="guardando() || cargando()"
+        >
+          {{ guardando() ? 'Guardando...' : 'Crear reserva' }}
+        </button>
+      </div>
+    </form>
+  </section>
+}
+
+@if (cargando()) {
+  <p> Cargando reservas... </p>
+}
+
+@if (error()) {
+  <p role="alert">{{ error() }}</p>
+}
+
+<h2 class="section-title">Listado de reservas</h2>
+
+<div class="table-wrap" aria-label="Tabla de reservas">
+  <table class="reservas-table">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Cliente</th>
+        <th>Fecha</th>
+        <th>Hora</th>
+        <th>Servicio</th>
+        <th>Estado</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+
+    <tbody>
+      @for (r of reservas(); track r.id) {
+        <tr>
+          <td>{{ r.id }}</td>
+          <td>{{ r.customerName }}</td>
+          <td>{{ r.date }}</td>
+          <td>{{ r.time }}</td>
+          <td>{{ r.service }}</td>
+          <td>
+            @if (r.status === 'CANCELLED') {
+              <span class="badge badge-cancelled">Cancelada</span>
+            } @else {
+              <span class="badge badge-active">Activa</span>
+            }
+          </td>
+          <td>
+            <button
+              type="button"
+              class="btn btn-danger"
+              (click)="cancelarReserva(r.id)"
+              [disabled]="r.status === 'CANCELLED' || cancelandoId() === r.id || cargando()"
+            >
+              {{ cancelandoId() === r.id ? 'Cancelando...' : 'Cancelar' }}
+            </button>
+          </td>
+        </tr>
+      }
+    </tbody>
+  </table>
+</div>
+
+<app-toast
+  [message]="toastError() ?? ''"
+  (onClose)="cerrarToast()"
+  [hidden]="!toastError()"
+/>
+

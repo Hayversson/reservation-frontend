@@ -1,0 +1,14 @@
+<div class="toast">
+  <div class="toast__content">
+    <p class="toast__message">{{ message() }}</p>
+    <button
+      type="button"
+      class="toast__close"
+      (click)="close()"
+      [attr.aria-label]="closeLabel()"
+    >
+      Cerrar
+    </button>
+  </div>
+</div>
+

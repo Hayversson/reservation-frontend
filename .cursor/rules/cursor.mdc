@@ -58,3 +58,53 @@ You are an expert in TypeScript, Angular, and scalable web application developme
 - Design services around a single responsibility
 - Use the `providedIn: 'root'` option for singleton services
 - Use the `inject()` function instead of constructor injection
+
+## Project Package Structure
+
+- Place each feature in its own directory under `/src/app/feature-name/`
+- Organize files by type within each feature directory:
+  - `components/` for UI components specific to the feature
+  - `services/` for business logic, data fetching, and state management
+  - `models/` for data contracts and interfaces/types
+  - `utils/` for helper and utility functions exclusive to that feature
+  - `store/` (if needed) for feature-specific state management logic
+- Shared functionality should go into `/src/app/shared/` with the same internal structure:
+  - `components/` for reusable/shared UI components
+  - `services/` for app-wide injectable services
+  - `models/` for global interfaces and types
+  - `utils/` for general-purpose utility functions
+
+### Example Structure
+
+```
+src/
+  app/
+    feature-a/
+      components/
+      services/
+      models/
+      utils/
+      store/
+    feature-b/
+      components/
+      services/
+      models/
+      utils/
+      store/
+    shared/
+      components/
+      services/
+      models/
+      utils/
+```
+
+- Place route configuration and route guards within their respective feature packages.
+- Do not create deep nested subfolders; keep the hierarchy as flat as possible for maintainability.
+
+## Naming Conventions
+
+- Use `kebab-case` for folder and file names.
+- Use `PascalCase` for type, class, component, and service names.
+- Suffix component files with `.component.ts` and service files with `.service.ts`.
+- Use barrel files (`index.ts`) to re-export types, services, and components at the package boundary.
+- Tests should be placed alongside the file they test, with `.spec.ts` suffix.
